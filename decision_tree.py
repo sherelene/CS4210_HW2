@@ -11,7 +11,6 @@
 
 # importing some Python libraries
 from sklearn import tree
-from sklearn.metrics import accuracy_score
 import csv
 
 dataSets = ['contact_lens_training_1.csv', 'contact_lens_training_2.csv', 'contact_lens_training_3.csv']
@@ -20,6 +19,7 @@ for ds in dataSets:
     dbTraining = []
     X = []
     Y = []
+
 
     # reading the training data in a csv file
     with open(ds, 'r') as csvfile:
@@ -32,30 +32,25 @@ for ds in dataSets:
     # so X = [[1, 1, 1, 1], [2, 2, 2, 2], ...]]
     # --> add your Python code here
     # X =
-    for row in dbTraining:
+
+    features_dic = {'Young': 1, 'Prepresbyopic': 2, 'Presbyopic': 3, 'Myope': 1, 'Hypermetrope': 2, 'Yes': 1, 'No': 2,
+                  'Normal': 1, 'Reduced': 2}
+    for row in range(len(dbTraining)):
         features = []
 
-        for i, value in enumerate(row):
-            if i == 0:
-                if value == 'Young':
-                    features.append(1)
-                elif value == 'Prepresbyopic':
-                    features.append(2)
-                else:
-                    features.append(3)
-            elif i == 1:
-                features.append(1 if value == 'Myope' else 2)
-            elif i == 2:
-                features.append(1 if value == 'No' else 2)
-            elif i == 3:
-                features.append(1 if value == 'Reduced' else 2)
+        for element in range(4):
+            features.append(int(features_dic[dbTraining[row][element]]))
+
         X.append(features)
 
         # transform the original categorical training classes to numbers and add to the vector Y. For instance Yes = 1, No = 2, so Y = [1, 1, 2, 2, ...]
     # --> add your Python code here
     # Y =
-    for row in dbTraining:
-        Y.append(1 if row[-1] == 'Yes' else 2)
+    for row in range(len(dbTraining)):
+        if dbTraining[row][4] == 'Yes':
+            Y.append(1)
+        else:
+            Y.append(2)
 
     # loop your training and test tasks 10 times here
     lowAcc = 1  # Lowest accuracy
@@ -77,37 +72,29 @@ for ds in dataSets:
 
         x_test = []
         y_test = []
-        for data in dbTest:
+        for row in range(len(dbTest)):
             test_features = []
-            for i, value in enumerate(data):
-                if i == 0:
-                    if value == 'Young':
-                        test_features.append(1)
-                    elif value == 'Prepresbyopic':
-                        test_features.append(2)
-                    else:
-                        test_features.append(3)
-                elif i == 1:
-                    test_features.append(1 if value == 'Myope' else 2)
-                elif i == 2:
-                    test_features.append(1 if value == 'No' else 2)
-                elif i == 3:
-                    test_features.append(1 if value == 'Reduced' else 2)
+            for element in range(4):
+                test_features.append(int(features_dic[dbTest[row][element]]))
+
             x_test.append(test_features)
 
-            for row in dbTest:
-                y_test.append(1 if row[-1] == 'Yes' else 2)
+        for row in range(len(dbTest)):
+            if dbTest[row][4] == 'Yes':
+                y_test.append(1)
+            else:
+                y_test.append(2)
 
             # class_predicted = []
             count = 0
 
-            for row in range(len(x_test)):
-                class_predicted = clf.predict([x_test[row]])[0]
-                if y_test[row] == class_predicted:
-                    count = count + 1
-            accuracy = count / len(x_test)
-            if accuracy < lowAcc:
-                lowAcc = accuracy
+        for row in range(len(x_test)):
+            class_predicted = clf.predict([x_test[row]])[0]
+            if y_test[row] == class_predicted:
+                count = count + 1
+        accuracy = count / len(x_test)
+        if accuracy < lowAcc:
+            lowAcc = accuracy
 
 
     # calculate and print average accuracy for the training data set
